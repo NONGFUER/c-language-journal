@@ -1,0 +1,34 @@
+# 通用忽略规则
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+
+# VS Code 工作区配置
+.vscode/
+
+# Windows 系统文件
+desktop.ini
+
+# 临时/缓存文件夹
+__pycache__/
+.cache/
+
+# 不跟踪的文档/导出文件
+*.docx
+*.xlsx
+*.pdf
+
+# 其他可选忽略
+*.exe
+*.out
+*.obj
+*.class
+*.dll
+*.so
+*.zip
+*.tar
+*.gz
+*.7z
