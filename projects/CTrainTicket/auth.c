@@ -28,7 +28,7 @@ void login_user()
             user* now_user = find_user_by_username(username);
             if(strcmp(password,now_user->password) == 0){
                 printf("登录成功！\n");
-                menu_user();
+                user_menu_choice();
                 break;
             }else{
                  count++;
@@ -89,20 +89,20 @@ void register_user()
         printf("请输入用户名：\n");
         scanf("%s",new_user.username);
         //验证用户名是否合法
-        if(!is_username_valid(new_user.username)) break;
+        if(is_username_valid(new_user.username)) break;
     }
     while (1)
     {
         printf("请输入身份证号：\n");
         scanf("%s",new_user.id_card);
         //验证身份证号是否合法
-        if(!is_id_card_valid(new_user.id_card)) break;
+        if(is_id_card_valid(new_user.id_card)) break;
     }
     while (1)
     {
         printf("请输入密码：\n");
         scanf("%s",temp_pwd);
-        if(!is_password_valid(temp_pwd)) break;
+        if(is_password_valid(temp_pwd)) break;
     }
     while (1)
     {
@@ -131,6 +131,3 @@ void register_user()
    
    
 }
-
-
-

@@ -3,7 +3,9 @@
 #include <string.h>
 #include "types.h"
 #include "global.h"
-
+#include "control.h"
+#include "user.h"
+#include "menu.h"
 
 
 //
@@ -15,20 +17,20 @@ void user_menu_choice() {
         switch(choice) {
             case 1:
                 printf("\n--- 用户基本信息维护 ---\n");
-                admin_manage_users();
+             
                 break;
                 
             case 2:
                 printf("\n--- 查询操作 ---\n");
-                admin_manage_trains();
+              
                 break;
             case 3:
                 printf("\n--- 退票操作 ---\n");
-                admin_manage_trains();
+               
                 break; 
             case 4:
                 printf("\n--- 订票操作 ---\n");
-                admin_manage_trains();
+               
                 break;       
             case 5:
                 menu_choice();
