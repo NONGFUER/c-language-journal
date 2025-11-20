@@ -1,6 +1,6 @@
 #ifndef MENU_H
 #define MENU_H
-void menu();
+
 void menu_head_style();//头部菜单样式
 void menu_end_style();//尾部菜单样式
 
