@@ -1,7 +1,7 @@
 # 编译器设置
 CC = gcc
 CFLAGS = -Wall -g -std=c99
-SOURCES = main.c menu.c auth.c control.c 
+SOURCES = main.c menu.c auth.c control.c user.c admin.c
 OBJECTS = $(SOURCES:.c=.o)
 
 # 检测操作系统
