@@ -9,5 +9,11 @@ typedef struct USER {
     //车票信息
 }user;
 
-user user_info[10];
+//管理员结构体
+typedef struct ADMIN {
+    char username[50];//用户名
+    char password[50];//密码
+}admin;
+
+
 #endif
