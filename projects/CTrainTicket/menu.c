@@ -32,72 +32,64 @@ void menu()
     printf("|  * 3. 新用户注册                         |\n");
     printf("|  * 4. 退出程序                           |\n");
     menu_end_style();
-    printf("\n请输入您的选择 (1-4): ");
+    printf("\n");
 }
 
 //旅客功能菜单
 void menu_user()
-{   menu_head_style();
-    printf("旅客菜单\n");
-    printf("1、用户基本信息维护（修改个人登陆密码）\n");
-    printf("2、查询操作\n");
-    printf("3、退票操作\n");
-    printf("4、订票操作\n");
-    printf("5、退出（返回上一级菜单）\n");
-     menu_end_style();
-}
-
-//查询火车车票信息子菜单
-void menu_ticket_query(){
+{   
     menu_head_style();
-    printf("车票查询\n");
-    printf("1、按车次，查询车票信息。\n");
-    printf("2、按出发地，查询车票信息。\n");
-    printf("3、按目的地，查询车票信息。\n");
+    printf("|          旅客功能菜单                     |\n");
+    printf("|                                          |\n");
+    printf("|  * 1. 用户基本信息维护                    |\n");
+    printf("|  * 2. 查询操作                           |\n");
+    printf("|  * 3. 退票操作                           |\n");
+    printf("|  * 4. 订票操作                           |\n");
+    printf("|  * 5. 返回主菜单                         |\n");
     menu_end_style();
+    printf("\n");
 }
 
 //管理员功能菜单
 void menu_admin()
 {
     menu_head_style();
-    printf("\n");
-    printf("管理员菜单\n");
-    printf("1、管理旅客用户信息\n");
-    printf("2、管理车次信息\n");
-    printf("3、退出（返回上一级菜单）\n");	
+    printf("|          管理员功能菜单                   |\n");
+    printf("|                                          |\n");
+    printf("|  * 1. 管理旅客用户信息                   |\n");
+    printf("|  * 2. 管理车次信息                       |\n");
+    printf("|  * 3. 返回主菜单                         |\n");	
     menu_end_style();
+    printf("\n");
 }
 
 //管理旅客用户信息-子菜单
 void menu_admin_user()
 {
     menu_head_style();
-    printf("\n");
-    printf("管理旅客用户信息\n");
-    printf("1、旅客用户查询\n");
-    printf("2、旅客用户信息列表显示\n");
-    printf("3、旅客用户增加\n");
-    printf("4、旅客用户删除\n");
-    printf("5、旅客用户修改\n");
-    printf("0、返回上级菜单\n");
+    printf("|       管理旅客用户信息                   |\n");
+    printf("|                                          |\n");
+    printf("|  * 1. 旅客用户查询                       |\n");
+    printf("|  * 2. 旅客用户信息列表显示               |\n");
+    printf("|  * 3. 旅客用户增加                       |\n");
+    printf("|  * 4. 旅客用户删除                       |\n");
+    printf("|  * 5. 旅客用户修改                       |\n");
+    printf("|  * 0. 返回上级菜单                       |\n");
     menu_end_style();
+    printf("\n");
 }
-
 
 //管理车次信息-子菜单
 void menu_train(){
     menu_head_style();
-    printf("\n");
-    printf("车次信息\n");
-    printf("a、车次查询\n");
-    printf("b、车次列表信息显示\n");
-    printf("c、车次增加\n");
-    printf("d、车次删除\n");
-    printf("5、车次修改\n");
-    printf("0、返回上级菜单\n");
+    printf("|          管理车次信息                     |\n");
+    printf("|                                          |\n");
+    printf("|  * 1. 车次查询                           |\n");
+    printf("|  * 2. 车次列表信息显示                   |\n");
+    printf("|  * 3. 车次增加                           |\n");
+    printf("|  * 4. 车次删除                           |\n");
+    printf("|  * 5. 车次修改                           |\n");
+    printf("|  * 0. 返回上级菜单                       |\n");
     menu_end_style();
+    printf("\n");
 }
-
-
-

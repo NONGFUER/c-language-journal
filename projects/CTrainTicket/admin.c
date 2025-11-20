@@ -7,12 +7,7 @@
 #include "types.h"
 #include "control.h"
 #include "global.h"
-#include "user.h"  // 添加这一行
-
-
-
-
-
+#include "user.h"
 
 // 管理员主功能选择
 void admin_menu_choice() {
@@ -32,8 +27,9 @@ void admin_menu_choice() {
                 break;
                 
             case 3:
-                menu_choice();
-                return;  // 退出管理员菜单
+                printf("返回主菜单...\n");
+                menu_choice();  // 调用主菜单函数
+                return;
                 
             default:
                 printf("系统错误：无效的选择\n");
@@ -74,7 +70,8 @@ void admin_manage_users() {
                 break;
                 
             case 0:
-                 menu_choice();
+                printf("返回管理员菜单...\n");
+                admin_menu_choice();  // 调用管理员菜单函数
                 return;
                 
             default:
@@ -89,25 +86,28 @@ void admin_manage_users() {
 
 // 管理车次信息功能选择
 void admin_manage_trains() {
+    // 加载车次信息
+    load_train_info();
+    
     while (1) {
         menu_train();  // 显示管理车次信息子菜单
         
         int choice = get_valid_choice(0, 5);
         
         switch(choice) {
-            case 1:  // 对应 a
+            case 1:
                 admin_train_query();
                 break;
                 
-            case 2:  // 对应 b
+            case 2:
                 admin_train_list();
                 break;
                 
-            case 3:  // 对应 c
+            case 3:
                 admin_train_add();
                 break;
                 
-            case 4:  // 对应 d
+            case 4:
                 admin_train_delete();
                 break;
                 
@@ -116,8 +116,8 @@ void admin_manage_trains() {
                 break;
                 
             case 0:
-                //返回管理员菜单
-                admin_menu_choice();
+                printf("返回管理员菜单...\n");
+                admin_menu_choice();  // 调用管理员菜单函数
                 return;
                 
             default:
@@ -229,7 +229,7 @@ void admin_user_add() {
     
     // 输入密码
     char temp_pwd[50];
-    while (1) {
+while (1) {
         printf("请输入密码：");
         scanf("%s", temp_pwd);
         clear_input_buffer();
@@ -358,7 +358,7 @@ void admin_user_modify() {
     
     if (found_index == -1) {
         printf("未找到用户名为 '%s' 的用户！\n", modify_username);
-        return;
+return;
     }
     
     printf("\n=== 当前用户信息 ===\n");
@@ -378,32 +378,23 @@ void admin_user_modify() {
         clear_input_buffer();
         
         switch (choice) {
+            // 在admin_user_modify函数中修改输入部分
             case 1: {
-                char new_password[50];
-                char temp_pwd[50];
-                
-                while (1) {
-                    printf("请输入新密码：");
-                    scanf("%s", temp_pwd);
-                    clear_input_buffer();
-                    
-                    if (!is_password_valid(temp_pwd)) {
-                        continue;
-                    }
-                    
-                    printf("请再次输入新密码确认：");
-                    scanf("%s", new_password);
-                    clear_input_buffer();
-                    
-                    if (strcmp(temp_pwd, new_password) != 0) {
-                        printf("两次输入的密码不一致，请重新输入！\n");
-                        continue;
-                    }
-                    
-                    strcpy(all_users[found_index].password, new_password);
-                    break;
-                }
-                
+            char new_password[50];
+            while (1) {
+            printf("请输入新密码：");
+            fgets(new_password, sizeof(new_password), stdin);
+            // 去除换行符
+            new_password[strcspn(new_password, "\n")] = 0;
+            
+            if (!is_password_valid(new_password)) {
+            continue;
+            }
+            
+            strcpy(all_users[found_index].password, new_password);
+            break;
+            }
+            
                 // 更新文件
                 FILE *fp = fopen("user_info.txt", "wb");
                 if (fp == NULL) {
@@ -417,14 +408,13 @@ void admin_user_modify() {
                 printf("密码修改成功！\n");
                 break;
             }
-            
             case 2: {
                 char new_id_card[20];
-                
                 while (1) {
                     printf("请输入新身份证号：");
-                    scanf("%s", new_id_card);
-                    clear_input_buffer();
+                    fgets(new_id_card, sizeof(new_id_card), stdin);
+                    // 去除换行符
+                    new_id_card[strcspn(new_id_card, "\n")] = 0;
                     
                     if (!is_id_card_valid(new_id_card)) {
                         continue;
@@ -461,39 +451,430 @@ void admin_user_modify() {
                 printf("身份证号修改成功！\n");
                 break;
             }
-            
             case 0:
                 printf("返回上级菜单。\n");
                 break;
-                
-            default:
+default:
                 printf("无效的选择，请重新输入！\n");
                 break;
         }
     } while (choice != 0);
 }
 
+// 车次相关全局变量定义
+train all_trains[50];
+int train_count = 0;
+
+// 加载车次信息
+void load_train_info() {
+    FILE *fp = fopen("train_info.txt", "rb");
+    if (fp == NULL) {
+        printf("车次信息文件不存在，将创建新文件。\n");
+        return;
+    }
+    
+    train_count = 0;
+    while (fread(&all_trains[train_count], sizeof(train), 1, fp) == 1) {
+        train_count++;
+        if (train_count >= 50) break;
+    }
+    fclose(fp);
+    
+    printf("成功加载 %d 个车次信息。\n", train_count);
+}
+// 保存车次信息
+void save_train_info() {
+    FILE *fp = fopen("train_info.txt", "wb");
+    if (fp == NULL) {
+        printf("车次信息文件保存失败！\n");
+        return;
+    }
+    
+    if (train_count > 0) {
+        fwrite(all_trains, sizeof(train), train_count, fp);
+    }
+    fclose(fp);
+}
+
+// 车次查询
 void admin_train_query() {
-    printf("🚀 执行：车次查询\n");
-    // TODO: 实现查询逻辑
+    printf("====车次查询====\n");
+    
+    if (train_count == 0) {
+        printf("当前没有车次数据！\n");
+        return;
+    }
+    
+    int choice;
+    printf("请选择查询方式：\n");
+    printf("1. 按车次查询\n");
+    printf("2. 按始发站查询\n");
+    printf("3. 按终点站查询\n");
+    printf("0. 返回\n");
+    printf("请输入选择：");
+    scanf("%d", &choice);
+    clear_input_buffer();
+    
+    char search_key[30];
+    int found = 0;
+    
+    switch (choice) {
+        case 1:
+            printf("请输入车次：");
+            fgets(search_key, sizeof(search_key), stdin);
+            // 去除换行符
+            search_key[strcspn(search_key, "\n")] = 0;
+            
+            printf("\n=== 查询结果 ===\n");
+            for (int i = 0; i < train_count; i++) {
+                if (strcmp(all_trains[i].train_number, search_key) == 0) {
+                    printf("车次：%s\n", all_trains[i].train_number);
+                    printf("始发站：%s\n", all_trains[i].start_station);
+                    printf("终点站：%s\n", all_trains[i].end_station);
+                    printf("出发时间：%s\n", all_trains[i].departure_time);
+                    printf("到达时间：%s\n", all_trains[i].arrival_time);
+                    printf("票价：%.2f元\n", all_trains[i].price);
+                    printf("总座位数：%d\n", all_trains[i].total_seats);
+                    printf("余票：%d\n", all_trains[i].remaining_tickets);
+                    printf("状态：%s\n", all_trains[i].is_active ? "启用" : "停用");
+                    printf("================\n");
+                    found = 1;
+                    break;
+                }
+            }
+            break;
+            
+        case 2:
+            printf("请输入始发站：");
+            fgets(search_key, sizeof(search_key), stdin);
+            // 去除换行符
+            search_key[strcspn(search_key, "\n")] = 0;
+            
+            printf("\n=== 查询结果 ===\n");
+            for (int i = 0; i < train_count; i++) {
+                if (strcmp(all_trains[i].start_station, search_key) == 0) {
+                    printf("%d. 车次：%s | 终点站：%s | 出发时间：%s | 票价：%.2f元 | 余票：%d\n", 
+                           i+1, all_trains[i].train_number, all_trains[i].end_station,
+                           all_trains[i].departure_time, all_trains[i].price, all_trains[i].remaining_tickets);
+                    found = 1;
+                }
+            }
+            break;
+            
+        case 3:
+            printf("请输入终点站：");
+            fgets(search_key, sizeof(search_key), stdin);
+            // 去除换行符
+            search_key[strcspn(search_key, "\n")] = 0;
+            
+            printf("\n=== 查询结果 ===\n");
+            for (int i = 0; i < train_count; i++) {
+                if (strcmp(all_trains[i].end_station, search_key) == 0) {
+                    printf("%d. 车次：%s | 始发站：%s | 出发时间：%s | 票价：%.2f元 | 余票：%d\n", 
+                           i+1, all_trains[i].train_number, all_trains[i].start_station,
+                           all_trains[i].departure_time, all_trains[i].price, all_trains[i].remaining_tickets);
+                    found = 1;
+                }
+            }
+            break;
+            
+        case 0:
+            printf("返回上级菜单。\n");
+            return;
+            
+        default:
+            printf("无效的选择！\n");
+            return;
+    }
+    
+    if (!found && choice != 0) {
+        printf("未找到符合条件的车次！\n");
+    }
 }
 
+// 车次列表信息显示
 void admin_train_list() {
-    printf("🚀 执行：车次列表信息显示\n");
-    // TODO: 实现列表显示逻辑
+    printf("====车次列表信息显示====\n");
+    
+    if (train_count == 0) {
+        printf("当前没有车次数据！\n");
+        return;
+    }
+    
+    printf("\n=== 车次列表 (共%d个车次) ===\n", train_count);
+    for (int i = 0; i < train_count; i++) {
+        printf("%d. 车次：%-8s | 始发站：%-10s | 终点站：%-10s | 出发时间：%s | 票价：%.2f元 | 余票：%d | 状态：%s\n", 
+               i+1, all_trains[i].train_number, all_trains[i].start_station, all_trains[i].end_station,
+               all_trains[i].departure_time, all_trains[i].price, all_trains[i].remaining_tickets,
+               all_trains[i].is_active ? "启用" : "停用");
+    }
+    printf("===========================\n");
 }
 
+// 车次增加
 void admin_train_add() {
-    printf("🚀 执行：车次增加\n");
-    // TODO: 实现增加逻辑
+    printf("====车次增加====\n");
+    
+    if (train_count >= 50) {
+        printf("车次数量已达上限(50个)，无法添加新车次！\n");
+        return;
+    }
+    
+    train new_train;
+    
+    // 输入车次
+    while (1) {
+        printf("请输入车次：");
+        fgets(new_train.train_number, sizeof(new_train.train_number), stdin);
+        // 去除换行符
+        new_train.train_number[strcspn(new_train.train_number, "\n")] = 0;
+        
+        // 检查车次是否重复
+        int train_exists = 0;
+        for (int i = 0; i < train_count; i++) {
+            if (strcmp(all_trains[i].train_number, new_train.train_number) == 0) {
+                train_exists = 1;
+                break;
+            }
+        }
+        
+        if (train_exists) {
+            printf("车次 '%s' 已存在，请重新输入！\n", new_train.train_number);
+            continue;
+        }
+        
+        if (strlen(new_train.train_number) == 0) {
+            printf("车次不能为空！\n");
+            continue;
+        }
+        
+        break;
+    }
+    
+    // 输入始发站
+    printf("请输入始发站：");
+    fgets(new_train.start_station, sizeof(new_train.start_station), stdin);
+    // 去除换行符
+    new_train.start_station[strcspn(new_train.start_station, "\n")] = 0;
+
+    // 输入终点站
+    printf("请输入终点站：");
+    fgets(new_train.end_station, sizeof(new_train.end_station), stdin);
+    // 去除换行符
+    new_train.end_station[strcspn(new_train.end_station, "\n")] = 0;
+
+    // 输入出发时间
+    printf("请输入出发时间(HH:MM)：");
+    fgets(new_train.departure_time, sizeof(new_train.departure_time), stdin);
+    // 去除换行符
+    new_train.departure_time[strcspn(new_train.departure_time, "\n")] = 0;
+    
+    // 输入到达时间
+    printf("请输入到达时间(HH:MM)：");
+    fgets(new_train.arrival_time, sizeof(new_train.arrival_time), stdin);
+    // 去除换行符
+    new_train.arrival_time[strcspn(new_train.arrival_time, "\n")] = 0;
+    
+    // 输入票价
+    printf("请输入票价：");
+    scanf("%f", &new_train.price);
+    clear_input_buffer();
+    
+    // 输入总座位数
+    printf("请输入总座位数：");
+    scanf("%d", &new_train.total_seats);
+    clear_input_buffer();
+    
+    // 设置初始余票数等于总座位数
+    new_train.remaining_tickets = new_train.total_seats;
+    new_train.is_active = 1;  // 默认启用
+    
+    // 保存新车次
+    all_trains[train_count] = new_train;
+    train_count++;
+    
+    // 更新文件
+    save_train_info();
+    
+    printf("车次 '%s' 添加成功！\n", new_train.train_number);
 }
 
+// 车次删除
 void admin_train_delete() {
-    printf("🚀 执行：车次删除\n");
-    // TODO: 实现删除逻辑
+    printf("====车次删除====\n");
+    
+    if (train_count == 0) {
+        printf("当前没有车次数据！\n");
+        return;
+    }
+    
+    char delete_train_number[10];
+    printf("请输入要删除的车次：");
+    fgets(delete_train_number, sizeof(delete_train_number), stdin);
+    // 去除换行符
+    delete_train_number[strcspn(delete_train_number, "\n")] = 0;
+    
+    int found_index = -1;
+    for (int i = 0; i < train_count; i++) {
+        if (strcmp(all_trains[i].train_number, delete_train_number) == 0) {
+            found_index = i;
+            break;
+        }
+    }
+    
+    if (found_index == -1) {
+        printf("未找到车次 '%s'！\n", delete_train_number);
+        return;
+    }
+    
+    // 显示要删除的车次信息
+    printf("\n=== 要删除的车次信息 ===\n");
+    printf("车次：%s\n", all_trains[found_index].train_number);
+    printf("始发站：%s\n", all_trains[found_index].start_station);
+    printf("终点站：%s\n", all_trains[found_index].end_station);
+    printf("出发时间：%s\n", all_trains[found_index].departure_time);
+    printf("票价：%.2f元\n", all_trains[found_index].price);
+    printf("========================\n");
+    
+    // 确认删除
+    printf("确认删除该车次吗？(y/n)：");
+    char confirm;
+    scanf("%c", &confirm);
+    clear_input_buffer();
+    
+    if (tolower(confirm) == 'y') {
+        // 移动数组元素
+        for (int i = found_index; i < train_count - 1; i++) {
+            all_trains[i] = all_trains[i + 1];
+        }
+        train_count--;
+        
+        // 更新文件
+        save_train_info();
+        
+        printf("车次 '%s' 删除成功！\n", delete_train_number);
+    } else {
+        printf("取消删除操作。\n");
+    }
 }
 
+// 车次修改
 void admin_train_modify() {
-    printf("🚀 执行：车次修改\n");
-    // TODO: 实现修改逻辑
+    printf("====车次修改====\n");
+    
+    if (train_count == 0) {
+        printf("当前没有车次数据！\n");
+        return;
+    }
+    
+    char modify_train_number[10];
+    printf("请输入要修改的车次：");
+    fgets(modify_train_number, sizeof(modify_train_number), stdin);
+    // 去除换行符
+    modify_train_number[strcspn(modify_train_number, "\n")] = 0;
+    
+    int found_index = -1;
+    for (int i = 0; i < train_count; i++) {
+        if (strcmp(all_trains[i].train_number, modify_train_number) == 0) {
+            found_index = i;
+            break;
+        }
+    }
+    
+    if (found_index == -1) {
+        printf("未找到车次 '%s'！\n", modify_train_number);
+        return;
+    }
+    
+    printf("\n=== 当前车次信息 ===\n");
+    printf("车次：%s\n", all_trains[found_index].train_number);
+    printf("始发站：%s\n", all_trains[found_index].start_station);
+    printf("终点站：%s\n", all_trains[found_index].end_station);
+    printf("出发时间：%s\n", all_trains[found_index].departure_time);
+    printf("到达时间：%s\n", all_trains[found_index].arrival_time);
+    printf("票价：%.2f元\n", all_trains[found_index].price);
+    printf("总座位数：%d\n", all_trains[found_index].total_seats);
+    printf("余票：%d\n", all_trains[found_index].remaining_tickets);
+    printf("状态：%s\n", all_trains[found_index].is_active ? "启用" : "停用");
+    printf("===================\n");
+    
+    int choice;
+    do {
+        printf("\n请选择要修改的信息：\n");
+        printf("1. 修改始发站\n");
+        printf("2. 修改终点站\n");
+        printf("3. 修改出发时间\n");
+        printf("4. 修改到达时间\n");
+        printf("5. 修改票价\n");
+        printf("6. 修改总座位数\n");
+        printf("7. 启用/停用车次\n");
+        printf("0. 返回\n");
+        printf("请输入选择：");
+        scanf("%d", &choice);
+        clear_input_buffer();
+        
+        switch (choice) {
+            case 1:
+                printf("请输入新始发站：");
+                scanf("%s", all_trains[found_index].start_station);
+                clear_input_buffer();
+                printf("始发站修改成功！\n");
+                break;
+                
+            case 2:
+                printf("请输入新终点站：");
+                scanf("%s", all_trains[found_index].end_station);
+                clear_input_buffer();
+                printf("终点站修改成功！\n");
+                break;
+                
+            case 3:
+                printf("请输入新出发时间(HH:MM)：");
+                scanf("%s", all_trains[found_index].departure_time);
+                clear_input_buffer();
+                printf("出发时间修改成功！\n");
+                break;
+                
+            case 4:
+                printf("请输入新到达时间(HH:MM)：");
+                scanf("%s", all_trains[found_index].arrival_time);
+                clear_input_buffer();
+                printf("到达时间修改成功！\n");
+                break;
+                
+            case 5:
+                printf("请输入新票价：");
+                scanf("%f", &all_trains[found_index].price);
+                clear_input_buffer();
+                printf("票价修改成功！\n");
+                break;
+                
+            case 6:
+                printf("请输入新总座位数：");
+                scanf("%d", &all_trains[found_index].total_seats);
+                clear_input_buffer();
+                printf("总座位数修改成功！\n");
+                break;
+                
+            case 7:
+                all_trains[found_index].is_active = !all_trains[found_index].is_active;
+                printf("车次状态已%s！\n", all_trains[found_index].is_active ? "启用" : "停用");
+                break;
+                
+            case 0:
+
+                printf("返回上级菜单。\n");
+                admin_manage_trains();
+                break;
+                
+            default:
+                printf("无效的选择，请重新输入！\n");
+                break;
+        }
+        
+        // 更新文件
+        if (choice != 0) {
+            save_train_info();
+        }
+    } while (choice != 0);
 }

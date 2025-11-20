@@ -8,42 +8,72 @@
 #include "control.h"
 #include "admin.h"
 #include "global.h"
+#include "ticket.h"  // 添加车票头文件
 
+// 全局变量声明
+extern user all_users[10];
+extern int user_count;
+extern train all_trains[50];
+extern int train_count;
 
 //旅客登录功能
 void login_user()
 { 
     char username[20];
     char password[20];
-    int count = 0;
+    int username_count = 0;
+    int password_count = 0;
+    user* now_user = NULL;
+    
     printf("====旅客登录====\n");
+    
+    // 用户名验证循环
     while(1){
         printf("请输入用户名：\n");
         scanf("%s", username);
+        clear_input_buffer();
+        
+        // 判断用户名是否存在
+        if(is_username_exists(username)){
+            now_user = find_user_by_username(username);
+            break;  // 用户名存在，跳出用户名验证循环
+        }else{
+            username_count++;
+            if(username_count >= 3) {
+                printf("用户名输入错误次数过多，返回主菜单！\n");
+                return;  // 直接返回，让主菜单重新显示
+            }
+            printf("用户名不存在，请重新输入！\n");
+            printf("您还有 %d 次机会\n", 3 - username_count);
+        }
+    }
+    
+    // 用户名存在，开始密码验证
+    while(1){
         printf("请输入密码：\n");
         scanf("%s", password);
         clear_input_buffer();
-        //判断用户名是否存在
-        if(is_username_exists(username)){
-            user* now_user = find_user_by_username(username);
-            if(strcmp(password,now_user->password) == 0){
-                printf("登录成功！\n");
-                user_menu_choice();
-                break;
-            }else{
-                 count++;
-                if(count == 3) {
-                    printf("错误次数过多，系统自动退出！\n");
-                    exit(0);
-                }
-                printf("密码错误，请重新输入！\n");
-            }             
-        }
-        else{
-            printf("用户名不存在，请重新输入！\n");
-        }
+        
+        if(strcmp(password, now_user->password) == 0){
+            printf("登录成功！欢迎 %s 登录火车订票系统！\n", username);
+            
+            // 加载车次信息
+            load_train_info();
+            
+            // 传递当前用户信息到用户菜单
+            user_menu_choice(now_user);
+            break;
+        }else{
+            password_count++;
+            if(password_count >= 3) {
+                printf("密码错误次数过多，系统自动退出！\n");
+                exit(0);
+            }
+            printf("密码错误，请重新输入！\n");
+            printf("您还有 %d 次机会\n", 3 - password_count);
+        }             
     }
-     return;
+    return;
 }
 
 /**

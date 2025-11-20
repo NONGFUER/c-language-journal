@@ -66,11 +66,11 @@ void exit_program()
 //主菜单选择功能
 void menu_choice()
 {   
-    menu();
-     while(1)
+    while(1)
     {   
-        int choice;
-        scanf("%d", &choice);
+        menu();  // 显示主菜单
+        int choice = get_valid_choice(1, 4);
+        
         switch(choice)
         {
             case LOGIN_USER:
@@ -87,9 +87,12 @@ void menu_choice()
                 break;
             default:
                 printf("无效选择，请重新输入\n");
+                break;
         }
+        
+        printf("\n按回车键返回主菜单...");
+        getchar();
     }
-       
 }
 
 //验证用户名是否合法
@@ -146,3 +149,4 @@ int clear_file(const char *filename) {
     printf("成功清空文件：%s\n", filename);
     return 0;
 }
+
