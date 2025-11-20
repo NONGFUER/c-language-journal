@@ -11,6 +11,49 @@ enum menu_choice
     REGISTER,
     EXIT
 };
+
+// 清除输入缓冲区
+void clear_input_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+// 获取有效的菜单选择
+int get_valid_choice(int min, int max) {
+    int choice = 0;
+    int ch;
+    int is_reading = 1;
+    
+     do{
+        printf("请输入您的选择 (%d-%d): ", min, max);
+        
+        choice = 0;
+        is_reading = 1;
+        
+        // 读取并处理输入
+        while (is_reading && (ch = getchar()) != '\n' && ch != EOF) {
+            if (ch >= '0' && ch <= '9') {
+                choice = choice * 10 + (ch - '0');
+            } else {
+                is_reading = 0;  // 遇到非数字字符，停止读取
+            }
+        }
+        
+        // 验证输入
+        if (choice >= min && choice <= max) {
+            break;
+        }
+        
+        // 清除可能的剩余输入
+        if (ch != '\n') {
+            while ((ch = getchar()) != '\n' && ch != EOF);
+        }
+        
+        printf("无效选择！请输入 %d-%d 之间的数字。\n", min, max);
+    }while (1);
+    
+    return choice;
+}
+
 //退出程序
 void exit_program()
 {
@@ -78,5 +121,18 @@ int is_password_valid(char *password)
         printf("密码长度必须在6-20个字符之间！\n");
         return 1;
     }
+    return 0;
+}
+
+// 清空文件内容的函数
+int clear_file(const char *filename) {
+    FILE *fp = fopen(filename, "w");  // 以写入模式打开，会清空文件内容
+    if (fp == NULL) {
+        printf("错误：无法打开文件 %s\n", filename);
+        return -1;
+    }
+    
+    fclose(fp);
+    printf("成功清空文件：%s\n", filename);
     return 0;
 }
