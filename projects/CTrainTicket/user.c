@@ -121,6 +121,9 @@ void user_change_password(user *current_user) {
     
     strcpy(current_user->password, new_password);
     printf("密码修改成功！\n");
+    
+    // 保存用户信息到文件
+    save_user_info();
 }
 
 // 查看详细信息
@@ -410,19 +413,28 @@ void save_new_user(user *user_info) {
         return;
     }
     
-    all_users[user_count] = *user_info;
+    // 确保新用户数据被正确初始化
+    memset(&all_users[user_count], 0, sizeof(user));
+    
+    // 只复制必要的字段，避免垃圾数据污染
+    strncpy(all_users[user_count].username, user_info->username, sizeof(all_users[user_count].username)-1);
+    strncpy(all_users[user_count].password, user_info->password, sizeof(all_users[user_count].password)-1);
+    strncpy(all_users[user_count].id_card, user_info->id_card, sizeof(all_users[user_count].id_card)-1);
+    
+    // 确保字符串以null结尾
+    all_users[user_count].username[sizeof(all_users[user_count].username)-1] = '\0';
+    all_users[user_count].password[sizeof(all_users[user_count].password)-1] = '\0';
+    all_users[user_count].id_card[sizeof(all_users[user_count].id_card)-1] = '\0';
+    
+    // 确保车票数量为0
+    all_users[user_count].ticket_count = 0;
+    
     user_count++;
 
-    FILE *fp = fopen("user_info.txt", "wb");
-    if (fp == NULL) {
-        printf("打开文件失败\n");
-        user_count--;
-        return;
-    }
-    
-    fwrite(all_users, sizeof(user), user_count, fp);
-    fclose(fp);
+    // 使用统一的保存函数
+    save_user_info();
 }
+
 
 // 根据用户名查找用户
 user* find_user_by_username(char *username) {
@@ -439,4 +451,17 @@ user* find_user_by_username(char *username) {
 // 检查用户名是否存在,返回1表示存在，0表示不存在
 int is_username_exists(char *username) {
     return find_user_by_username(username) != NULL;
+}
+
+// 保存所有用户信息到文件
+void save_user_info() {
+    FILE *fp = fopen("user_info.txt", "wb");
+    if (fp == NULL) {
+        printf("打开文件失败，无法保存用户信息！\n");
+        return;
+    }
+    
+    fwrite(all_users, sizeof(user), user_count, fp);
+    fclose(fp);
+    printf("用户信息已保存到文件！\n");
 }

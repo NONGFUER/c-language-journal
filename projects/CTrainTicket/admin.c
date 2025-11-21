@@ -229,7 +229,7 @@ void admin_user_add() {
     
     // 输入密码
     char temp_pwd[50];
-while (1) {
+    while (1) {
         printf("请输入密码：");
         scanf("%s", temp_pwd);
         clear_input_buffer();

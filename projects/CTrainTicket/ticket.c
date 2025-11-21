@@ -6,6 +6,7 @@
 #include "global.h"
 #include "menu.h"
 #include "control.h"
+#include "user.h"  // 添加user.h头文件包含
 
 // 全局车票数据
 extern train all_trains[50];
@@ -122,6 +123,12 @@ void user_query_train_tickets() {
 int book_ticket(user *current_user, train *selected_train) {
     printf("==== 订票操作 ====\n");
     
+    // 添加空指针检查
+    if (current_user == NULL || selected_train == NULL) {
+        printf("订票信息无效！\n");
+        return 0;
+    }
+    
     // 检查车票是否可订
     if (!is_ticket_available(selected_train)) {
         printf("该车次余票不足，无法订票！\n");
@@ -133,51 +140,82 @@ int book_ticket(user *current_user, train *selected_train) {
         printf("您已经订过该车次的车票！\n");
         return 0;
     }
-    
+    printf("用户订票数量：%d",current_user->ticket_count+1);
     // 检查用户订票数量是否已达上限
     if (current_user->ticket_count >= MAX_TICKETS_PER_USER) {
         printf("您的订票数量已达上限(%d张)，无法继续订票！\n", MAX_TICKETS_PER_USER);
         return 0;
     }
     
-    // 创建新车票
-    ticket new_ticket;
-    strcpy(new_ticket.train_number, selected_train->train_number);
-    strcpy(new_ticket.start_station, selected_train->start_station);
-    strcpy(new_ticket.end_station, selected_train->end_station);
-    strcpy(new_ticket.departure_time, selected_train->departure_time);
-    strcpy(new_ticket.arrival_time, selected_train->arrival_time);
+    // 创建新车票 - 使用安全的字符串拷贝
+    ticket new_ticket = {0}; // 初始化为0，避免未初始化内存
+    
+    // 使用strncpy确保不会越界
+    strncpy(new_ticket.train_number, selected_train->train_number, sizeof(new_ticket.train_number)-1);
+    strncpy(new_ticket.start_station, selected_train->start_station, sizeof(new_ticket.start_station)-1);
+    strncpy(new_ticket.end_station, selected_train->end_station, sizeof(new_ticket.end_station)-1);
+    strncpy(new_ticket.departure_time, selected_train->departure_time, sizeof(new_ticket.departure_time)-1);
+    strncpy(new_ticket.arrival_time, selected_train->arrival_time, sizeof(new_ticket.arrival_time)-1);
+    
+    // 确保字符串以null结尾
+    new_ticket.train_number[sizeof(new_ticket.train_number)-1] = '\0';
+    new_ticket.start_station[sizeof(new_ticket.start_station)-1] = '\0';
+    new_ticket.end_station[sizeof(new_ticket.end_station)-1] = '\0';
+    new_ticket.departure_time[sizeof(new_ticket.departure_time)-1] = '\0';
+    new_ticket.arrival_time[sizeof(new_ticket.arrival_time)-1] = '\0';
+    
     new_ticket.price = selected_train->price;
     new_ticket.total_seats = selected_train->total_seats;
     new_ticket.remaining_tickets = selected_train->remaining_tickets - 1;
     new_ticket.is_booked = 1;
     
-    // 生成座位号（改进版）- 避免重复座位号
+    // 生成座位号- 避免重复座位号
     int seat_number_base = current_user->ticket_count * 2 + 1; // 确保每次订票座位号不同
-    sprintf(new_ticket.seat_number, "%d-%d", 
+    snprintf(new_ticket.seat_number, sizeof(new_ticket.seat_number), "%d-%d", 
             (seat_number_base % 5) + 1,  // 车厢号 (1-5)
             (seat_number_base % 20) + 1); // 座位号 (1-20)
     
-    // 生成订票日期（简化版）
-    strcpy(new_ticket.booking_date, "2024-01-01"); // 实际应该获取当前日期
+    // 生成订票日期
+    strncpy(new_ticket.booking_date, "2024-01-01", sizeof(new_ticket.booking_date)-1);
+    new_ticket.booking_date[sizeof(new_ticket.booking_date)-1] = '\0';
     
-    // 添加到用户已订车票列表
-    current_user->booked_tickets[current_user->ticket_count] = new_ticket;
-    current_user->ticket_count++;
-    
-    printf("订票成功！\n");
-    printf("车次：%s | %s → %s | 座位：%s | 票价：%.2f元\n", 
-           new_ticket.train_number, new_ticket.start_station, 
-           new_ticket.end_station, new_ticket.seat_number, new_ticket.price);
-    
-    return 1;
+    // 添加到用户已订车票列表 - 添加边界检查
+    if (current_user->ticket_count >= 0 && current_user->ticket_count < MAX_TICKETS_PER_USER) {
+        current_user->booked_tickets[current_user->ticket_count] = new_ticket;
+        current_user->ticket_count++;
+        
+        printf("订票成功！\n");
+        printf("车次：%s | %s → %s | 座位：%s | 票价：%.2f元\n", 
+               new_ticket.train_number, new_ticket.start_station, 
+               new_ticket.end_station, new_ticket.seat_number, new_ticket.price);
+        
+        // 保存用户信息到文件
+        save_user_info();
+        
+        return 1;
+    } else {
+        printf("订票失败：用户车票数量异常！\n");
+        return 0;
+    }
 }
 
 // 检查是否已订该车票
 int has_user_booked_ticket(user *current_user, char *train_number) {
+    // 添加空指针检查
+    if (current_user == NULL || train_number == NULL) {
+        return 0;
+    }
+    
+    // 添加边界检查
+    if (current_user->ticket_count < 0 || current_user->ticket_count > MAX_TICKETS_PER_USER) {
+        return 0;
+    }
+    
     for (int i = 0; i < current_user->ticket_count; i++) {
-        if (strcmp(current_user->booked_tickets[i].train_number, train_number) == 0 && 
-            !current_user->booked_tickets[i].is_booked) {
+        // 添加对booked_tickets数组元素的检查
+        if (current_user->booked_tickets[i].train_number[0] != '\0' && 
+            strcmp(current_user->booked_tickets[i].train_number, train_number) == 0 && 
+            current_user->booked_tickets[i].is_booked) {
             return 1;
         }
     }
@@ -188,6 +226,12 @@ int has_user_booked_ticket(user *current_user, char *train_number) {
 int cancel_ticket(user *current_user, int ticket_index) {
     printf("==== 退票操作 ====\n");
     
+    // 添加空指针检查
+    if (current_user == NULL) {
+        printf("用户信息无效！\n");
+        return 0;
+    }
+    
     if (ticket_index < 0 || ticket_index >= current_user->ticket_count) {
         printf("无效的车票索引！\n");
         return 0;
@@ -195,8 +239,8 @@ int cancel_ticket(user *current_user, int ticket_index) {
     
     ticket *cancel_ticket = &current_user->booked_tickets[ticket_index];
     
-    // 检查是否已退票
-    if (cancel_ticket->is_booked) {
+    // 检查是否已退票 - 修复逻辑：检查是否还未退票
+    if (!cancel_ticket->is_booked) {
         printf("该车票已退票，无法重复退票！\n");
         return 0;
     }
@@ -222,6 +266,9 @@ int cancel_ticket(user *current_user, int ticket_index) {
     printf("已退车票：%s | %s → %s | 座位：%s\n", 
            cancel_ticket->train_number, cancel_ticket->start_station, cancel_ticket->end_station,
            cancel_ticket->seat_number);
+    
+    // 保存用户信息到文件
+    save_user_info();
     
     return 1;
 }

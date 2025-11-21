@@ -5,7 +5,7 @@
 #include "types.h"
 
 // 用户相关函数声明
-void user_menu_choice(user *current_user);  // 修改函数签名，添加参数
+void user_menu_choice(user *current_user);  
 
 // 用户查询操作函数
 void user_query_operation(user *current_user);
@@ -23,10 +23,12 @@ void user_info_maintenance(user *current_user);
 void user_change_password(user *current_user);
 void user_view_details(user *current_user);
 
-// 原有用户管理函数
+// 用户管理函数
 int load_user_info(user *users);
 void save_new_user(user *user_info);
 user* find_user_by_username(char *username);
 int is_username_exists(char *username);
 
+// 用户信息保存函数
+void save_user_info();
 #endif

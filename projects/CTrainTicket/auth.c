@@ -114,6 +114,11 @@ void register_user()
 {
     char temp_pwd[20];
     user new_user;
+    
+    // 初始化新用户数据，确保车票数据为0
+    memset(&new_user, 0, sizeof(user));
+    new_user.ticket_count = 0;  // 确保车票数量为0
+    
     printf("旅客注册\n");
     while(1){
         printf("请输入用户名：\n");
@@ -152,12 +157,11 @@ void register_user()
         else{
             printf("两次输入的密码不一致，请重新输入！\n");
         }
-        
     }
+}
 
  
 
 
    
    
-}

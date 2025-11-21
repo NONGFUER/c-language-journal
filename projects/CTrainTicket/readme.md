@@ -172,33 +172,35 @@ make clean
 
 ### 主菜单 (menu_choice)
 ├── 1. 旅客登录 → 用户菜单 (user_menu_choice)
-│   ├── 1. 用户基本信息维护
-│   │   ├── 1. 修改密码
-│   │   └── 2. 查看详细信息
-│   ├── 2. 查询操作
-│   │   ├── 1. 查询已订的车票信息
-│   │   └── 2. 查询火车的车票信息
-│   │       ├── a. 按车次查询车票信息
-│   │       ├── b. 按始发站查询车票信息
-│   │       └── c. 按终点站查询车票信息
-│   ├── 3. 退票操作
-│   ├── 4. 订票操作
-│   └── 5. 返回主菜单
+│   ├── 1. 用户基本信息维护 (user_info_maintenance)
+│   │   ├── 1. 修改密码 (user_change_password)
+│   │   └── 2. 查看详细信息 (view_user_details)
+│   │   └── 0. 返回上级菜单 (user_menu_choice)
+│   ├── 2. 查询操作(user_query_operation)
+│   │   ├── 1. 查询已订的车票信息 (user_query_booked_tickets)
+│   │   └── 2. 查询火车的车票信息 (user_train_ticket_submenu)
+│   │       ├── a. 按车次查询车票信息 (user_query_train_tickets_by_number)
+│   │       ├── b. 按始发站查询车票信息 (user_query_train_tickets_by_start)
+│   │       └── c. 按终点站查询车票信息 (user_query_train_tickets_by_end)
+│   │   └── 0. 返回上级菜单 (user_query_operation)
+│   ├── 3. 退票操作 (user_cancel_ticket_operation)
+│   ├── 4. 订票操作 (user_book_ticket_operation)
+│   └── 5. 返回主菜单(menu_choice)
 ├── 2. 管理员登录 → 管理员菜单 (admin_menu_choice)
-│   ├── 1. 管理旅客用户信息
-│   │   ├── 1. 旅客用户查询
-│   │   ├── 2. 旅客用户信息列表显示
-│   │   ├── 3. 旅客用户增加
-│   │   ├── 4. 旅客用户删除
-│   │   ├── 5. 旅客用户修改
-│   │   └── 0. 返回上级菜单
-│   ├── 2. 管理车次信息
-│   │   ├── 1. 车次查询
-│   │   ├── 2. 车次列表信息显示
-│   │   ├── 3. 车次增加
-│   │   ├── 4. 车次删除
-│   │   ├── 5. 车次修改
-│   │   └── 0. 返回上级菜单
-│   └── 3. 返回主菜单
-├── 3. 新用户注册
-└── 4. 退出程序
+│   ├── 1. 管理旅客用户信息(admin_manage_users)
+│   │   ├── 1. 旅客用户查询(admin_user_query)
+│   │   ├── 2. 旅客用户信息列表显示(admin_user_list)
+│   │   ├── 3. 旅客用户增加(admin_user_add)
+│   │   ├── 4. 旅客用户删除(admin_user_delete)
+│   │   ├── 5. 旅客用户修改 (admin_user_modify)
+│   │   └── 0. 返回上级菜单 (admin_menu_choice)
+│   ├── 2. 管理车次信息(admin_manage_trains)
+│   │   ├── 1. 车次查询(admin_train_query)
+│   │   ├── 2. 车次列表信息显示(admin_train_list)
+│   │   ├── 3. 车次增加(admin_train_add)
+│   │   ├── 4. 车次删除(admin_train_delete)
+│   │   ├── 5. 车次修改 (admin_train_modify)
+│   │   └── 0. 返回上级菜单 (admin_menu_choice)
+│   └── 3. 返回主菜单 (menu_choice)
+├── 3. 新用户注册 → 注册菜单 (register_user)
+└── 4. 退出程序 (exit_program)
