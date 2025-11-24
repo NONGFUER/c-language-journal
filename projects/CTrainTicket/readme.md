@@ -47,7 +47,7 @@ CTrainTicket 是一个基于C语言开发的命令行火车订票系统，具有
    - 启用/停用车次
 
 ## 项目结构
-
+```
 CTrainTicket/ 
 ├── main.c # 主程序入口 
 ├── menu.c # 菜单相关功能实现 
@@ -67,7 +67,7 @@ CTrainTicket/
 ├── train_info.txt # 车次信息数据文件 
 ├── user_info.txt # 用户信息数据文件 
 └── train_ticket.exe# 可执行文件
-
+```
 ## 数据结构
 
 ### 用户信息 (user)
@@ -171,6 +171,7 @@ make clean
 ## 项目菜单结构
 
 ### 主菜单 (menu_choice)
+```
 ├── 1. 旅客登录 → 用户菜单 (user_menu_choice)
 │   ├── 1. 用户基本信息维护 (user_info_maintenance)
 │   │   ├── 1. 修改密码 (user_change_password)
@@ -204,3 +205,4 @@ make clean
 │   └── 3. 返回主菜单 (menu_choice)
 ├── 3. 新用户注册 → 注册菜单 (register_user)
 └── 4. 退出程序 (exit_program)
+```
